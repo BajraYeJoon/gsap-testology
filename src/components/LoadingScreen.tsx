@@ -4,9 +4,13 @@ import gsap from "gsap";
 
 interface LoadingScreenProps {
   onComplete: () => void;
+  onBeforeComplete: () => void;
 }
 
-const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
+const LoadingScreen = ({
+  onComplete,
+  onBeforeComplete,
+}: LoadingScreenProps) => {
   const screenRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
 
@@ -15,7 +19,6 @@ const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
       defaults: { ease: "power2.inOut" },
     });
 
-    // Animation sequence
     tl.fromTo(
       textRef.current,
       {
@@ -38,6 +41,7 @@ const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
         },
         "+=1"
       )
+      .call(onBeforeComplete)
       .to(screenRef.current, {
         y: "-100%",
         duration: 1.2,
