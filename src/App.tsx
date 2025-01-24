@@ -1,72 +1,113 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import LoadingScreen from "./components/LoadingScreen";
+import { useTextAnimation } from "./hooks/useTextAnimation";
+
+// Register ScrollTrigger plugin
+gsap.registerPlugin(ScrollTrigger);
 
 function App() {
   const [loading, setLoading] = useState(true);
+  const mainRef = useRef(null);
   const heroRef = useRef(null);
+  const heroContentRef = useRef(null);
   const imageRef = useRef(null);
-  const textRefs = {
-    title: useRef(null),
-    subtitle1: useRef(null),
-    subtitle2: useRef(null),
-    button: useRef(null),
-  };
+  const buttonRef = useRef(null);
   const hasAnimatedRef = useRef(false);
   const [shouldAnimate, setShouldAnimate] = useState(false);
+
+  const titleAnimation = useTextAnimation();
+  const subtitle1Animation = useTextAnimation();
+  const subtitle2Animation = useTextAnimation();
+  const section2TitleAnimation = useTextAnimation({ delay: 0 });
+
+  // Initialize Lenis
+
+  useEffect(() => {
+    if (!loading && !shouldAnimate) {
+      setShouldAnimate(true);
+    }
+  }, [loading]);
 
   useGSAP(
     () => {
       if (shouldAnimate && !hasAnimatedRef.current) {
         hasAnimatedRef.current = true;
 
+        // Set initial state of the image
         gsap.set(imageRef.current, {
-          scale: 1.5,
-        });
-        gsap.to(imageRef.current, {
+          scale: 1.3,
           opacity: 1,
-          duration: 0.01,
         });
 
-        // Animate text elements with stagger
-        gsap.fromTo(
-          [
-            textRefs.title.current,
-            textRefs.subtitle1.current,
-            textRefs.subtitle2.current,
-            textRefs.button.current,
-          ],
+        // Create a timeline for better control
+        const tl = gsap.timeline();
+
+        // Animate all text elements
+        titleAnimation.animate();
+        subtitle1Animation.animate();
+        subtitle2Animation.animate();
+
+        // Animate button
+        tl.fromTo(
+          buttonRef.current,
           {
-            y: 50,
+            y: 30,
             opacity: 0,
           },
           {
             y: 0,
             opacity: 1,
-            delay: 0.5,
-            duration: 1,
-            stagger: 0.11,
-            ease: "power1.out",
+            duration: 0.5,
+            ease: "power2.out",
           }
         );
 
-        // Start scale down animation
-        gsap.to(imageRef.current, {
-          scale: 1,
-          duration: 1.8,
-          ease: "power3.inOut",
+        // Scale down animation
+        tl.to(
+          imageRef.current,
+          {
+            scale: 1,
+            duration: 2.1,
+            ease: "power3.out",
+          },
+          "<"
+        ); // Start at the same time as button animation
+
+        // Create the scroll-triggered zoom animation
+        ScrollTrigger.create({
+          trigger: heroRef.current,
+          start: "top top",
+          end: "+=30%",
+          scrub: true,
+          pin: true,
+          pinSpacing: true,
+          animation: gsap.fromTo(
+            imageRef.current,
+            {
+              scale: 1,
+              padding: "2rem",
+              borderRadius: "2rem",
+            },
+            {
+              scale: 1.1,
+              padding: 0,
+              borderRadius: 0,
+            }
+          ),
         });
       }
     },
     {
       dependencies: [shouldAnimate],
-      scope: heroRef,
+      scope: mainRef,
     }
   );
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-black">
+    <main ref={mainRef} className="relative min-h-screen  overflow-x-hidden ">
       {loading && (
         <LoadingScreen
           onComplete={() => setLoading(false)}
@@ -74,54 +115,91 @@ function App() {
         />
       )}
 
-      <section ref={heroRef} className="relative h-screen w-full">
-        {/* Background Image Container */}
-        <div className="absolute inset-0 w-full h-full overflow-hidden">
-          <div ref={imageRef} className="relative w-full h-full opacity-0">
-            <img
-              src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop"
-              alt="Hero Background"
-              className="w-full h-full object-cover brightness-[0.6]"
-            />
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/20" />
+      {/* First Section with padding and rounded corners */}
+      <section ref={heroRef} className="relative h-screen ">
+        <div
+          ref={heroContentRef}
+          className="h-full  transform-gpu"
+          style={{
+            transformOrigin: "center center",
+          }}
+        >
+          <div className="h-full  overflow-hidden relative">
+            {/* Background Image Container */}
+            <div className="absolute inset-0 w-full h-full  overflow-hidden">
+              <div ref={imageRef} className="relative w-full h-full ">
+                <img
+                  src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop"
+                  alt="Hero Background"
+                  className="w-full h-full object-cover  rounded-2xl"
+                />
+              </div>
+            </div>
+
+            {/* Hero Content */}
+            <div className="relative z-10 h-full flex flex-col items-center justify-center px-4 text-white">
+              <div className="overflow-hidden">
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-light tracking-wider mb-6 text-center">
+                  {titleAnimation.createLetterSpans("We develop")}
+                </h1>
+              </div>
+              <div className="overflow-hidden">
+                <p className="text-2xl md:text-3xl lg:text-4xl font-light tracking-wide text-center max-w-3xl mx-auto leading-relaxed">
+                  {subtitle1Animation.createLetterSpans(
+                    "e-business environments"
+                  )}
+                </p>
+              </div>
+              <div className="overflow-hidden mt-2">
+                <p className="text-2xl md:text-3xl lg:text-4xl font-light tracking-wide text-center max-w-3xl mx-auto leading-relaxed">
+                  {subtitle2Animation.createLetterSpans("with love!")}
+                </p>
+              </div>
+              <div className="overflow-hidden mt-12">
+                <button
+                  ref={buttonRef}
+                  className="px-8 py-3 border border-white/30 rounded-full 
+                  text-lg tracking-wide hover:bg-white/10 transition-colors duration-300 opacity-0"
+                >
+                  Explore More
+                </button>
+              </div>
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* Hero Content */}
-        <div className="relative z-10 h-full flex flex-col items-center justify-center px-4 text-white">
+      {/* Second Section without padding */}
+      <section className="relative h-screen bg-black w-full">
+        <div className="relative h-full flex flex-col items-center justify-center px-4">
           <div className="overflow-hidden">
-            <h1
-              ref={textRefs.title}
-              className="text-4xl md:text-6xl lg:text-7xl font-light tracking-wider mb-6 text-center opacity-0"
-            >
-              We develop
-            </h1>
+            <h2 className="text-4xl md:text-6xl lg:text-7xl font-light tracking-wider mb-6 text-center text-white">
+              {section2TitleAnimation.createLetterSpans("Our Services")}
+            </h2>
           </div>
-          <div className="overflow-hidden">
-            <p
-              ref={textRefs.subtitle1}
-              className="text-2xl md:text-3xl lg:text-4xl font-light tracking-wide text-center max-w-3xl mx-auto leading-relaxed opacity-0"
-            >
-              e-business environments,
-            </p>
-          </div>
-          <div className="overflow-hidden mt-2">
-            <p
-              ref={textRefs.subtitle2}
-              className="text-2xl md:text-3xl lg:text-4xl font-light tracking-wide text-center max-w-3xl mx-auto leading-relaxed opacity-0"
-            >
-              with love!
-            </p>
-          </div>
-          <div className="overflow-hidden mt-12">
-            <button
-              ref={textRefs.button}
-              className="px-8 py-3 border border-white/30 rounded-full 
-              text-lg tracking-wide hover:bg-white/10 transition-colors duration-300 opacity-0"
-            >
-              Explore More
-            </button>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            {/* Add your service cards or content here */}
+            <div className="bg-white/5 p-6 rounded-lg backdrop-blur-sm">
+              <h3 className="text-xl text-white mb-4">Web Development</h3>
+              <p className="text-gray-300">
+                Modern and responsive web applications built with the latest
+                technologies.
+              </p>
+            </div>
+            <div className="bg-white/5 p-6 rounded-lg backdrop-blur-sm">
+              <h3 className="text-xl text-white mb-4">Mobile Apps</h3>
+              <p className="text-gray-300">
+                Native and cross-platform mobile applications for iOS and
+                Android.
+              </p>
+            </div>
+            <div className="bg-white/5 p-6 rounded-lg backdrop-blur-sm">
+              <h3 className="text-xl text-white mb-4">Cloud Solutions</h3>
+              <p className="text-gray-300">
+                Scalable and secure cloud infrastructure for your business
+                needs.
+              </p>
+            </div>
           </div>
         </div>
       </section>
