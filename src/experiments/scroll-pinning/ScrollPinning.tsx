@@ -13,7 +13,6 @@ function ScrollPinning() {
   const pinSection3Ref = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
-    // Basic Pin Example
     ScrollTrigger.create({
       trigger: pinSection1Ref.current,
       start: "top top",
@@ -23,7 +22,6 @@ function ScrollPinning() {
       markers: true,
     });
 
-    // Pin with Timeline Animation
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: pinSection2Ref.current,
@@ -39,20 +37,40 @@ function ScrollPinning() {
       .to(".animate-text", { rotation: 360, duration: 1 })
       .to(".animate-text", { scale: 1, duration: 1 });
 
-    // Pin with Snap Points
+    const cards = gsap.utils.toArray<HTMLElement>(".snap-point");
+
     ScrollTrigger.create({
       trigger: pinSection3Ref.current,
       start: "top top",
-      end: "+=300%",
+      end: "+=1024",
       pin: true,
       pinSpacing: true,
       markers: true,
-      snap: {
-        snapTo: [0, 0.5, 1], // Snap to start, middle, and end
-        duration: { min: 0.2, max: 0.8 },
-        delay: 0,
-        ease: "power1.inOut",
+    });
+
+    const snapPoints = gsap.timeline({
+      scrollTrigger: {
+        trigger: pinSection3Ref.current,
+        start: "top top",
+        end: "+=100%",
+        endTrigger: pinSection3Ref.current,
+        scrub: 1,
+        markers: true,
       },
+    });
+
+    gsap.set(cards, {
+      yPercent: (i) => i * 100,
+      opacity: 1,
+    });
+
+    cards.forEach((card, i) => {
+      if (i === 0) return;
+      snapPoints.to(card, {
+        yPercent: 0,
+        scale: 1,
+        duration: 1,
+      });
     });
   });
 
@@ -104,18 +122,23 @@ function ScrollPinning() {
       {/* Pin with Snap Points */}
       <section
         ref={pinSection3Ref}
-        className="min-h-screen bg-green-900 flex items-center justify-center p-8"
+        className="h-[900px] bg-green-900 relative overflow-hidden"
       >
-        <div className="max-w-2xl text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6">Snap Points</h2>
-          <p className="text-xl text-green-200">
-            This section demonstrates snapping behavior. Scroll will snap to
-            specific points during the pin duration.
-          </p>
-          <div className="mt-12 space-y-8">
-            <div className="p-6 bg-green-800 rounded-lg">Snap Point 1</div>
-            <div className="p-6 bg-green-800 rounded-lg">Snap Point 2</div>
-            <div className="p-6 bg-green-800 rounded-lg">Snap Point 3</div>
+        <div className="min-h-screen flex flex-col items-center justify-center p-8">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-white">
+            Snap Points
+          </h2>
+          <div className="snap-points-wrapper relative h-[600px] w-[800px]">
+            {[1, 2, 3].map((index) => (
+              <div
+                key={index}
+                className={`snap-point absolute p-8 
+                } rounded-lg w-full transform-gpu `}
+              >
+                <h3 className="text-xl font-bold mb-2">Card {index}</h3>
+                <p>Card {index} content</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
