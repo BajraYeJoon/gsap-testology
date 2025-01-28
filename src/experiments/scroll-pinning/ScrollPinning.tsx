@@ -2,8 +2,8 @@ import { useRef } from "react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+ 
 
-// Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
 
 function ScrollPinning() {
@@ -16,7 +16,7 @@ function ScrollPinning() {
     ScrollTrigger.create({
       trigger: pinSection1Ref.current,
       start: "top top",
-      end: "+=20%",
+      end: "+=100%",
       pin: true,
       pinSpacing: true,
       markers: true,
@@ -60,6 +60,7 @@ function ScrollPinning() {
     });
 
     gsap.set(cards, {
+      backgroundColor: (i) => ["red", "blue", "green"][i],
       yPercent: (i) => i * 100,
       opacity: 1,
     });
@@ -124,15 +125,15 @@ function ScrollPinning() {
         ref={pinSection3Ref}
         className="h-[900px] bg-green-900 relative overflow-hidden"
       >
-        <div className="min-h-screen flex flex-col items-center justify-center p-8">
+        <div className="min-h-screen flex flex-col items-center justify-center gap-12 p-8">
           <h2 className="text-3xl md:text-5xl font-bold mb-6 text-white">
             Snap Points
           </h2>
-          <div className="snap-points-wrapper relative h-[600px] w-[800px]">
+          <div className="snap-points-wrapper flex flex-col h-[600px] w-[800px] items-center justify-center gap-8 ">
             {[1, 2, 3].map((index) => (
               <div
                 key={index}
-                className={`snap-point absolute p-8 
+                className={`snap-point h-[600px] w-[800px] absolute p-8 
                 } rounded-lg w-full transform-gpu `}
               >
                 <h3 className="text-xl font-bold mb-2">Card {index}</h3>

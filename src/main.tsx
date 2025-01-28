@@ -5,6 +5,8 @@ import { router } from "./routes";
 import "./index.css";
 import LenisWrapper from "./Lenis";
 
+
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <LenisWrapper>
