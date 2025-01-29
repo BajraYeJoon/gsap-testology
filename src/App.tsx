@@ -2,10 +2,9 @@ import { Link } from "react-router-dom";
 
 const experiments = [
   {
-    id: "hero-parallax",
-    title: "Hero Parallax",
-    description:
-      "Smooth parallax scrolling effect with image scaling and text animations",
+    id: "hero-zoom",
+    title: "Hero Zoom",
+    description: "Hero Section with Preloading and Zooming",
   },
   {
     id: "scroll-pinning",
@@ -17,6 +16,11 @@ const experiments = [
     id: "side-content-pinning",
     title: "Side Content Pinning",
     description: "Pinning content to the side of the screen with GSAP",
+  },
+  {
+    id: "parallax",
+    title: "Parallax",
+    description: "Parallax scrolling effect with GSAP",
   },
 ];
 

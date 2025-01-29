@@ -7,7 +7,7 @@ import { useTextAnimation } from "../../hooks/useTextAnimation";
 
 gsap.registerPlugin(ScrollTrigger);
 
-function HeroParallax() {
+function HeroZoom() {
   const [loading, setLoading] = useState(true);
   const heroRef = useRef(null);
   const imageRef = useRef(null);
@@ -189,4 +189,4 @@ function HeroParallax() {
   );
 }
 
-export default HeroParallax;
+export default HeroZoom;
