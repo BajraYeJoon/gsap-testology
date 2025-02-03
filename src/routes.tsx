@@ -4,6 +4,8 @@ import ScrollPinning from "./experiments/scroll-pinning/ScrollPinning";
 import SideContentPinning from "./experiments/side-content-pinning/SideContentPinning";
 import HeroZoom from "./experiments/hero-zoom/HeroParallax";
 import Parallax from "./experiments/parallax/Parallax";
+import MorphSVG from "./experiments/motion-svgmorph/MorphSVG";
+import ScrollMorph from "./experiments/scroll-morph/ScrollMorph";
 
 export const router = createBrowserRouter([
   {
@@ -25,5 +27,14 @@ export const router = createBrowserRouter([
   {
     path: "/experiments/parallax",
     element: <Parallax />,
+  },
+  {
+    path: "/experiments/svgmorph",
+    element: <MorphSVG />,
+  },
+
+  {
+    path: "/experiments/scroll-morph",
+    element: <ScrollMorph />,
   },
 ]);

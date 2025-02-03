@@ -22,6 +22,16 @@ const experiments = [
     title: "Parallax",
     description: "Parallax scrolling effect with GSAP",
   },
+  {
+    id: "svgmorph",
+    title: "Motion SVG Morph",
+    description: "Motion SVG Morph with Framer Motion",
+  },
+  // {
+  //   id: "scroll-morph",
+  //   title: "Scroll Morph",
+  //   description: "Scroll Morph with Framer Motion",
+  // },
 ];
 
 function App() {
